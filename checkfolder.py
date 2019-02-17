@@ -17,21 +17,6 @@ conf = SparkConf()\
     .setMaster('local[3]')
 sc = SparkContext(conf=conf)
 
-class FileUnit():
-    def retreaveContent(self):
-        pass
-
-    def __init__(self, fname, dirpath):
-        path = os.path.join(fname, dirpath)
-        self.name = fname
-        self.path = path
-        self.size = os.path.getsize(path)
-
-    def __eq__(self, other):
-        return self.name == other.name and \
-            self.size == self.size and \
-            filecmp._do_cmp(self.path, other.path)
-
 class CheckDir():
     def __init__(self,path):
         self.path = path
@@ -60,13 +45,13 @@ class CheckDir():
                                   sys.exc_info()[0])
                     return
 
-#subdir, dirs, files
+
         getthrow = lambda args:\
             [(fname, os.path.join(args[0],fname))\
              for fname in args[2]]
 
         def getInfo(t:tuple):
-            print("try {0}".format(t[1]))
+            logging.info("try {0}".format(t[1]))
             size = os.path.getsize(t[1])
             content = hash(t[1])
             return (t[0], t[1], size, content)
@@ -78,16 +63,8 @@ class CheckDir():
             .filter(lambda t: len(t) == 4) \
             .collect()
 
-
-        #for subdir, dirs, files in :
-            #self.filelist += [os.path.join(subdir,fname) for fname in files]
-
-
-    def scan(self):
-        pass
-
 if __name__ == "__main__":
     dir = CheckDir(os.path.curdir)
 
-    print(dir.df.head(5))
+    print(dir.df.head(10))
 
