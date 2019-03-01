@@ -45,26 +45,31 @@ class CheckDir():
                                   sys.exc_info()[0])
                     return
 
-
         getthrow = lambda args:\
             [(fname, os.path.join(args[0],fname))\
              for fname in args[2]]
 
-        def getInfo(t:tuple):
+        def getinfo(t:tuple):
             logging.info("try {0}".format(t[1]))
             size = os.path.getsize(t[1])
             content = hash(t[1])
             return (t[0], t[1], size, content)
 
-
         return sc.parallelize(os.walk(self.path))\
             .flatMap(getthrow) \
-            .map(getInfo) \
+            .map(getinfo) \
             .filter(lambda t: len(t) == 4) \
             .collect()
 
-if __name__ == "__main__":
-    dir = CheckDir(os.path.curdir)
 
-    print(dir.df.head(10))
+if __name__ == "__main__":
+
+    path = input("Input path: ")
+    # os.path.curdir
+    logging.info(path)
+    dir = CheckDir(path)
+
+    print(dir.df.groupby(["Size", "Content"], as_index="Name").size())
+
+    # print(dir.df.head(10))
 
